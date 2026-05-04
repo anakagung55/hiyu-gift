@@ -6,22 +6,39 @@ interface Product {
   id: string;
   name: string;
   base_price: number;
-  original_price?: number; // Tambahan untuk harga coret
+  original_price?: number; 
   category: string;
   image_url: string;
 }
 
+interface Testimonial {
+  id: number;
+  customer_name: string;
+  location: string;
+  content: string;
+}
+
 export default async function Home() {
-  const { data: products, error } = await supabase
+  // Ambil data Produk
+  const { data: products, error: prodError } = await supabase
     .from('products')
     .select('*')
 
-  if (error) console.error('Gagal mengambil data:', error)
+  // Ambil data Testimoni (Dinamis sesuai task)
+  const { data: testimonials, error: testError } = await supabase
+    .from('testimonials')
+    .select('*')
+    .eq('is_active', true) // Hanya ambil yang diset aktif oleh Ibu
+    .order('created_at', { ascending: false })
+    .limit(3)
+
+  if (prodError) console.error('Gagal mengambil data produk:', prodError)
+  if (testError) console.error('Gagal mengambil data testimoni:', testError)
 
   return (
     <main className="min-h-screen bg-hiyu-cream text-hiyu-dark selection:bg-hiyu-rose selection:text-white relative">
       
-      {/* IMPROVEMENT 1: SCARCITY PROMO BAR */}
+      {/* SCARCITY PROMO BAR */}
       <div className="bg-hiyu-rose text-white text-center py-2.5 text-sm font-medium tracking-wide shadow-md relative z-20">
         🎈 Promo Soft Opening: Gratis Custom Tulisan untuk 50 Pembeli Pertama! 🎈
       </div>
@@ -79,7 +96,6 @@ export default async function Home() {
                 <h3 className="font-serif text-2xl mb-2 text-hiyu-dark group-hover:text-hiyu-rose transition-colors">{product.name}</h3>
                 <div className="flex justify-between items-end mt-4 border-t border-gray-100 pt-4">
                   <div className="flex flex-col">
-                    {/* HARGA CORET */}
                     {product.original_price && (
                       <p className="text-xs text-gray-400 line-through mb-0.5">
                         {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(product.original_price)}
@@ -126,7 +142,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* IMPROVEMENT: TESTIMONIAL SECTION (Permintaan Ibu) */}
+      {/* TESTIMONIAL SECTION (Sekarang Dinamis) */}
       <section className="bg-white py-24 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -134,21 +150,14 @@ export default async function Home() {
             <p className="text-gray-500">Momen bahagia yang berhasil kami abadikan.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Testimoni 1 */}
-            <div className="bg-hiyu-cream/20 p-8 rounded-[2.5rem] border border-hiyu-blush/20 italic text-gray-600">
-              "Kado balonnnya cantik banget! Stickernya juga rapi. Pacar saya seneng banget pas dapet kejutan ini. Makasih HiYu Gift!"
-              <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">— Santi, Gianyar</div>
-            </div>
-            {/* Testimoni 2 */}
-            <div className="bg-hiyu-cream/20 p-8 rounded-[2.5rem] border border-hiyu-blush/20 italic text-gray-600">
-              "Pelayanannya ramah banget, bisa request mendadak tapi hasilnya tetep premium. Sangat rekomen buat yang cari kado di Bali."
-              <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">— Budi, Singaraja</div>
-            </div>
-            {/* Testimoni 3 */}
-            <div className="bg-hiyu-cream/20 p-8 rounded-[2.5rem] border border-hiyu-blush/20 italic text-gray-600">
-              "Suka banget sama rangkaian warnanya, soft dan mewah. Bunganya juga awet. Next order lagi di sini pastinya!"
-              <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">— Ayu, Denpasar</div>
-            </div>
+            {testimonials?.map((testi: Testimonial) => (
+              <div key={testi.id} className="bg-hiyu-cream/20 p-8 rounded-[2.5rem] border border-hiyu-blush/20 italic text-gray-600 shadow-sm hover:shadow-md transition">
+                "{testi.content}"
+                <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">
+                  — {testi.customer_name}{testi.location ? `, ${testi.location}` : ''}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
