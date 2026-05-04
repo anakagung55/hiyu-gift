@@ -6,6 +6,7 @@ interface Product {
   id: string;
   name: string;
   base_price: number;
+  original_price?: number; // Tambahan untuk harga coret
   category: string;
   image_url: string;
 }
@@ -51,6 +52,7 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* SECTION PRODUK */}
       <section className="max-w-7xl mx-auto py-24 px-6 md:px-12 bg-white rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
         <div className="text-center md:text-left mb-16">
           <h2 className="text-4xl font-serif text-hiyu-dark mb-3">Pilihan Terfavorit</h2>
@@ -75,10 +77,18 @@ export default async function Home() {
               </div>
               <div className="px-2">
                 <h3 className="font-serif text-2xl mb-2 text-hiyu-dark group-hover:text-hiyu-rose transition-colors">{product.name}</h3>
-                <div className="flex justify-between items-center mt-4 border-t border-gray-100 pt-4">
-                  <p className="text-xl font-semibold text-hiyu-dark">
-                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(product.base_price)}
-                  </p>
+                <div className="flex justify-between items-end mt-4 border-t border-gray-100 pt-4">
+                  <div className="flex flex-col">
+                    {/* HARGA CORET */}
+                    {product.original_price && (
+                      <p className="text-xs text-gray-400 line-through mb-0.5">
+                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(product.original_price)}
+                      </p>
+                    )}
+                    <p className="text-xl font-semibold text-hiyu-dark">
+                      {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(product.base_price)}
+                    </p>
+                  </div>
                   <span className="text-sm font-bold text-white bg-hiyu-rose px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-all -translate-y-2 group-hover:translate-y-0 duration-300">
                     Pesan &rarr;
                   </span>
@@ -89,7 +99,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* IMPROVEMENT 2: HOW IT WORKS (Membangun Trust) */}
+      {/* HOW IT WORKS */}
       <section className="bg-hiyu-cream py-24 px-6 md:px-12 border-t border-hiyu-blush/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -116,7 +126,34 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* IMPROVEMENT 3: FLOATING WHATSAPP BUTTON */}
+      {/* IMPROVEMENT: TESTIMONIAL SECTION (Permintaan Ibu) */}
+      <section className="bg-white py-24 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-serif text-hiyu-dark mb-4">Apa Kata Mereka?</h2>
+            <p className="text-gray-500">Momen bahagia yang berhasil kami abadikan.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Testimoni 1 */}
+            <div className="bg-hiyu-cream/20 p-8 rounded-[2.5rem] border border-hiyu-blush/20 italic text-gray-600">
+              "Kado balonnnya cantik banget! Stickernya juga rapi. Pacar saya seneng banget pas dapet kejutan ini. Makasih HiYu Gift!"
+              <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">— Santi, Gianyar</div>
+            </div>
+            {/* Testimoni 2 */}
+            <div className="bg-hiyu-cream/20 p-8 rounded-[2.5rem] border border-hiyu-blush/20 italic text-gray-600">
+              "Pelayanannya ramah banget, bisa request mendadak tapi hasilnya tetep premium. Sangat rekomen buat yang cari kado di Bali."
+              <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">— Budi, Singaraja</div>
+            </div>
+            {/* Testimoni 3 */}
+            <div className="bg-hiyu-cream/20 p-8 rounded-[2.5rem] border border-hiyu-blush/20 italic text-gray-600">
+              "Suka banget sama rangkaian warnanya, soft dan mewah. Bunganya juga awet. Next order lagi di sini pastinya!"
+              <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">— Ayu, Denpasar</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FLOATING WHATSAPP BUTTON */}
       <a href="https://wa.me/6288808900908" target="_blank" rel="noopener noreferrer" 
          className="fixed bottom-8 right-8 bg-[#25D366] text-white p-4 rounded-full shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:scale-110 hover:-translate-y-2 transition-all z-50 flex items-center justify-center group">
         <svg viewBox="0 0 24 24" className="w-8 h-8" fill="currentColor">
