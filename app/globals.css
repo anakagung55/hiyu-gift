@@ -1,18 +1,38 @@
 @import "tailwindcss";
 
 @theme {
-  /* Palet Warna Premium HiYu */
   --color-hiyu-cream: #FFF9F5;
   --color-hiyu-blush: #FADADD;
   --color-hiyu-rose: #D49A89;
   --color-hiyu-dark: #2D2D2D;
-
-  /* Font Premium */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
 }
 
-/* Biar efek scroll ke bawahnya mulus */
+@utility animate-marquee {
+  display: flex;
+  width: max-content;
+  flex-direction: row; /* KUNCI: Biar dia gak numpuk ke bawah */
+  animation: scroll-left 40s linear infinite;
+}
+
+@keyframes scroll-left {
+  /* KUNCI: Pakai -50% biar pas looping-nya sempurna berapa pun jumlah kartunya */
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
 html {
   scroll-behavior: smooth;
+}
+@utility hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

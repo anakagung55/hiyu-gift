@@ -31,7 +31,7 @@ export default async function Home() {
     .select('*')
     .eq('is_active', true) // Hanya ambil yang diset aktif oleh Ibu
     .order('created_at', { ascending: false })
-    .limit(3)
+    .limit(10)
 
   if (prodError) console.error('Gagal mengambil data produk:', prodError)
   if (testError) console.error('Gagal mengambil data testimoni:', testError)
@@ -143,41 +143,53 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIAL SECTION (Dinamis + Support Foto) */}
-      <section className="bg-white py-24 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif text-hiyu-dark mb-4">Apa Kata Mereka?</h2>
-            <p className="text-gray-500">Momen bahagia yang berhasil kami abadikan.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials?.map((testi: Testimonial) => (
-              <div key={testi.id} className="bg-hiyu-cream/20 rounded-[2.5rem] border border-hiyu-blush/20 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
-                
-                {/* Render Foto Jika Ada */}
-                {testi.image_url && (
-                  <div className="relative w-full h-64 bg-hiyu-blush/10">
-                    <Image
-                      src={testi.image_url}
-                      alt={`Testimoni dari ${testi.customer_name}`}
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  </div>
-                )}
+      {/* TESTIMONIAL SECTION (Auto-Scroll + Manual Swipe) */}
+      <section className="bg-white py-24 px-0 overflow-hidden relative">
+        <div className="text-center mb-16 px-6">
+          <h2 className="text-4xl font-serif text-hiyu-dark mb-4">Apa Kata Mereka?</h2>
+          <p className="text-gray-500">Momen bahagia yang berhasil kami abadikan.</p>
+        </div>
 
-                {/* Render Teks Testimoni */}
-                <div className="p-8 flex flex-col grow justify-between">
-                  <p className="italic text-gray-600">"{testi.content}"</p>
-                  <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">
-                    — {testi.customer_name}{testi.location ? `, ${testi.location}` : ''}
-                  </div>
+        {/* Efek Fade di pinggir */}
+        <div className="absolute left-0 top-0 bottom-0 w-20 md:w-40 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute right-0 top-0 bottom-0 w-20 md:w-40 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+
+        {/* 
+            Container Marquee: 
+            Ditambah 'overflow-x-auto' & 'snap-x' agar bisa digeser manual.
+            'hide-scrollbar' biar bersih.
+        */}
+        <div className="flex animate-marquee gap-6 px-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar active:cursor-grabbing">
+          {[...(testimonials || []), ...(testimonials || [])].map((testi: Testimonial, index) => (
+            <div 
+              key={`${testi.id}-${index}`} 
+              className="snap-center w-[300px] md:w-[400px] shrink-0 bg-hiyu-cream/30 rounded-[2.5rem] border border-hiyu-blush/20 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col"
+            >
+              {/* Gambar Testimoni - Ditinggikan biar gak plafon doang */}
+              {testi.image_url && (
+                <div className="relative w-full h-[400px] bg-hiyu-blush/10">
+                  <Image
+                    src={testi.image_url}
+                    alt={`Testimoni ${testi.customer_name}`}
+                    fill
+                    className="object-cover object-center hover:scale-105 transition-transform duration-700" 
+                    unoptimized
+                  />
                 </div>
-                
+              )}
+
+              {/* Teks Testimoni */}
+              <div className="p-8 flex flex-col flex-grow justify-between bg-white/50 backdrop-blur-sm">
+                <p className="italic text-gray-600 leading-relaxed text-sm">
+                  "{testi.content}"
+                </p>
+                <div className="mt-6 not-italic">
+                  <div className="font-bold text-hiyu-dark text-sm">{testi.customer_name}</div>
+                  <div className="text-xs text-hiyu-rose">{testi.location}</div>
+                </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
 
