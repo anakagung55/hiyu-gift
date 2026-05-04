@@ -16,6 +16,7 @@ interface Testimonial {
   customer_name: string;
   location: string;
   content: string;
+  image_url?: string; // <-- Tambahkan baris ini
 }
 
 export default async function Home() {
@@ -142,7 +143,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIAL SECTION (Sekarang Dinamis) */}
+      {/* TESTIMONIAL SECTION (Dinamis + Support Foto) */}
       <section className="bg-white py-24 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -151,11 +152,29 @@ export default async function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {testimonials?.map((testi: Testimonial) => (
-              <div key={testi.id} className="bg-hiyu-cream/20 p-8 rounded-[2.5rem] border border-hiyu-blush/20 italic text-gray-600 shadow-sm hover:shadow-md transition">
-                "{testi.content}"
-                <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">
-                  — {testi.customer_name}{testi.location ? `, ${testi.location}` : ''}
+              <div key={testi.id} className="bg-hiyu-cream/20 rounded-[2.5rem] border border-hiyu-blush/20 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
+                
+                {/* Render Foto Jika Ada */}
+                {testi.image_url && (
+                  <div className="relative w-full h-64 bg-hiyu-blush/10">
+                    <Image
+                      src={testi.image_url}
+                      alt={`Testimoni dari ${testi.customer_name}`}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                )}
+
+                {/* Render Teks Testimoni */}
+                <div className="p-8 flex flex-col grow justify-between">
+                  <p className="italic text-gray-600">"{testi.content}"</p>
+                  <div className="mt-6 not-italic font-bold text-hiyu-dark text-sm">
+                    — {testi.customer_name}{testi.location ? `, ${testi.location}` : ''}
+                  </div>
                 </div>
+                
               </div>
             ))}
           </div>
