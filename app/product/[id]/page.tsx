@@ -1,15 +1,16 @@
 import { supabase } from '../../utils/supabase'
 import Image from 'next/image'
 import Link from 'next/link'
-import AddToCartForm from '../../../components/AddToCartForm' // Import komponen baru
+import AddToCartForm from '../../../components/AddToCartForm'
 
 export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params
   const productId = resolvedParams.id
 
+  // 1. Pastikan mengambil 'original_price' juga dari database
   const { data: product } = await supabase
     .from('products')
-    .select('*')
+    .select('*, original_price') // Memastikan kolom original_price ikut terambil
     .eq('id', productId)
     .single()
 
@@ -44,14 +45,28 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           <div className="w-full md:w-1/2 flex flex-col justify-center">
             <p className="text-xs text-hiyu-rose font-bold uppercase tracking-wider mb-3">{product.category}</p>
             <h1 className="text-4xl md:text-5xl font-serif text-hiyu-dark mb-4 leading-tight">{product.name}</h1>
-            <p className="text-2xl font-medium text-hiyu-dark mb-6 border-b border-gray-100 pb-6">
-              {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(product.base_price)}
-            </p>
+            
+            {/* AREA HARGA PROMO & CORET */}
+            <div className="flex items-baseline gap-3 mb-6 border-b border-gray-100 pb-6">
+              <p className="text-3xl font-medium text-hiyu-dark">
+                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(product.base_price)}
+              </p>
+              {product.original_price && (
+                <p className="text-lg text-gray-400 line-through decoration-hiyu-rose/50">
+                  {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(product.original_price)}
+                </p>
+              )}
+              {product.original_price && (
+                <span className="ml-2 bg-hiyu-rose/10 text-hiyu-rose text-xs font-bold px-2 py-1 rounded-md">
+                  Hemat {Math.round(((product.original_price - product.base_price) / product.original_price) * 100)}%
+                </span>
+              )}
+            </div>
+
             <p className="text-gray-600 leading-relaxed mb-8 font-light">
               {product.description}
             </p>
 
-            {/* KOMPONEN INTERAKTIF DIMASUKKAN DI SINI */}
             <AddToCartForm product={product} options={options || []} />
             
           </div>
